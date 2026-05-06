@@ -1,0 +1,28 @@
+name: Deploy Node.js App to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs: 
+  deploy:
+    runs-on: amazonlinux-2
+    steps:
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/nodejs-app || git clone https://github.com/Franklyn180/nodejs-app.git
+
+            cd ~/nodejs-app
+
+            git pull origin main
+            
+            npm install
+            
+            pm2 restart all 
