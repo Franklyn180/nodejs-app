@@ -17,12 +17,25 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd ~/nodejs-app || git clone https://github.com/Franklyn180/nodejs-app.git
+            cd ~
 
-            cd ~/nodejs-app
+            if [ ! -d "nodejs-app" ]; then
+              git clone https://github.com/Franklyn180/nodejs-app.git
+            fi
+
+            cd nodejs-app
 
             git pull origin main
             
             npm install
-            
-            pm2 restart all 
+
+            if ! command -v pm2 &> /dev/null
+            then
+              sudo npm install -g pm2
+            fi
+
+            pm2 restart app || pm2 start index.js
+
+            pm2 save
+
+          
